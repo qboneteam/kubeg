@@ -23,12 +23,9 @@ TheLoopa
 	jr TheLoopa
 
 drawline:
-;h,d - y
-;l,e - x
-	ret
-
-
-
+//  CP A >= N --- NC
+//  CP A <  N --- C
+//
 //function line(x0, x1, y0, y1)
 //	int deltax := abs(x1 - x0)
 //	int deltay := abs(y1 - y0)
@@ -40,14 +37,42 @@ drawline:
 //		diry = 1
 //	if diry < 0
 //		diry = -1
+//
 //	for x from x0 to x1
 //		plot(x,y)
 //		error := error + deltaerr
 //		if 2 * error >= deltax
 //			y := y + diry
 //			error := error - deltax
+;h,d - y
+;l,e - x
 
+	ld a,h
+	cp d
+	jr c,.l0
+	ex de,hl
+.l0
+	ld b,e
+	ld c,l
+	call setDelta
+	ld (deltay+1),a
+	ld b,h
+	ld c,d
+	call setDelta
+deltay
+	cp 0
+	jp c,delyGRdelx
 
+delxGRdely
+	ret
 
+delyGRdelx
+	ret
 
+setDelta:
+	ld a,b
+	sub c
+	ret nc
+	neg
+	ret
 	savesna "kubeg.sna",SnaStart
