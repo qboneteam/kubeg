@@ -1,6 +1,12 @@
 	device zxspectrum128
 	org	#6000
 SnaStart:
+	inc h
+	dec h
+	inc l
+	dec l
+
+
 	ei
 	ld hl,#4000
 	ld de,#4001
@@ -47,26 +53,31 @@ drawline:
 ;h,d - y
 ;l,e - x
 
-	ld a,h
-	cp d
-	jr c,.l0
+	ld a,l
+	cp e
+	jr c,.l0 ;l<e
 	ex de,hl
 .l0
-	ld b,e
-	ld c,l
-	call setDelta
-	ld (deltay+1),a
 	ld b,h
 	ld c,d
 	call setDelta
+	ld (deltay+1),a
+	ld b,l
+	ld c,e
+	call setDelta
 deltay
 	cp 0
-	jp c,delyGRdelx
+	jp c,delyGRdelx ;dx<dy
 
 delxGRdely
+;+- l
+
 	ret
 
 delyGRdelx
+;+- h
+
+
 	ret
 
 setDelta:
