@@ -1,12 +1,6 @@
 	device zxspectrum128
 	org	#6000
 SnaStart:
-	inc h
-	dec h
-	inc l
-	dec l
-
-
 	ei
 	ld hl,#4000
 	ld de,#4001
@@ -20,6 +14,12 @@ TheLoopa
 	halt
 	inc a
 	out (#fe),a
+	ld hl,#0707
+	ld de,#0707
+	call drawline
+	ld hl,#0000
+	ld de,#001d
+	call drawline
 	ld hl,#0000
 	ld de,#171f
 	call drawline
@@ -34,23 +34,17 @@ drawline:
 
 //;h,d - y0 y1
 //;l,e - x0 x1
-	ld a,h
-	xor d
-	jr nz,.l0
-	ld a,e
-	xor l
-	jr nz,.l0
-	ld b,h
-	ld c,l
-	call plot
-	ret
-.l0
-	ld a,l
-	cp e
-	jr c,.l1 ;l<e
-	ex de,hl
-.l1
-//function line(x0, x1, y0, y1)
+//	ld a,h
+//	xor d
+//	jr nz,.l0
+//	ld a,e
+//	xor l
+//	jr nz,.l0
+//	ld b,h
+//	ld c,l
+//	call plot
+//	ret
+//.l0
 //	int deltax := abs(x1 - x0)
 	ld b,l
 	ld c,e
@@ -64,6 +58,14 @@ drawline:
 //	int error := 0
 	xor a
 	ld (error),a
+
+	ld a,l
+	cp e
+	jr c,.l1 ;l<e
+	ex de,hl
+.l1
+//function line(x0, x1, y0, y1)
+
 //	int deltaerr := deltay
 	ld a,(deltay)
 	ld (deltaerr),a
@@ -95,6 +97,7 @@ cikla:
 	ld e,l
 	ld a,(__y)
 	ld d,a
+	inc b
 .l0:
 	push de
 	call plot
@@ -111,7 +114,8 @@ cikla:
 //		if 2 * error >= deltax
 	add a,a
 	cp h
-	jp nc,.l1
+;	jp nc,.l1
+	jp c,.l1
 //			y := y + diry
 //			error := error - deltax
 	ld a,(diry)
@@ -156,39 +160,4 @@ __y
 diry
 	db 0
 
-
-
-
-//	ld a,l
-//	cp e
-//	jr c,.l0 ;l<e
-//	ex de,hl
-//.l0
-//	ld b,h
-//	ld c,d
-//	call setDelta
-//	ld (deltay+1),a
-//	ld b,l
-//	ld c,e
-//	call setDelta
-//	ld (deltax+1),a
-//deltay
-//	cp 0
-//	jp c,delyGRdelx ;dx<dy
-//
-//delxGRdely
-//;+- l
-//deltax
-//	ld a,0
-//
-//
-//
-//	ret
-//
-//delyGRdelx
-//;+- h
-//ld a,(deltay+1)
-//
-//	ret
-//
 	savesna "kubeg.sna",SnaStart
