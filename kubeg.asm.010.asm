@@ -6,7 +6,7 @@ SnaStart:
 ;	inc d ;#14 - %00010100
 ;	dec d ;#15 - %00010101
 ;	inc e ;#1c - %00011100
-;	dec e ;#1d - %00011101
+;	dec	e ;#1d - %00011101
 
 	ei
 	ld hl,#4000
@@ -21,24 +21,18 @@ TheLoopa
 	halt
 	inc a
 	out (#fe),a
-	ld a,#ff
-	ld (kkolor+1),a
+	ld hl,#0707
+	ld de,#0707
+	call drawline
+	ld hl,#0000
+	ld de,#001d
+	call drawline
 	ld hl,#0000
 	ld de,#171f
 	call drawline
 	ld hl,#001f
 	ld de,#1700
 	call drawline
-	ld a,#55
-	ld (kkolor+1),a
-	ld hl,#0001
-	ld de,#1707
-	call drawline
-	ld hl,#0007
-	ld de,#1701
-	call drawline
-
-
 	jr TheLoopa
 
 drawline:
@@ -59,44 +53,7 @@ drawline:
 	ld a,(deltax)
 	cp c
 	jr nc,lx
-;	jr $
-;----------------
-	ld a,#14 ;inc d
-	ld (change_a_coord),a
-
-	ld a,h
-	cp d
-	jr c,.l1 ;l<e
-	ex de,hl
-.l1
-	ld a,(deltay)
-	ld c,a
-	inc a
-	ld xl,a
-//function line(x0, x1, y0, y1)
-//	int deltaerr := deltay
-	ld a,(deltax)
-	ld (deltaerr+1),a
-//	int y := y0
-//	int diry := y1 - y0
-	ld a,e
-	sub l
-//	if diry > 0
-//		diry = 1
-//	if diry < 0
-//		diry = -1
-	jr c,.l2
-	or a
-	jr z,setdirx
-	ld a,#1c ;inc e
-	jr setdirx
-.l2
-	ld a,#1d ;dec e
-setdirx
-	ld (change_b_coord),a
-	jr cikla
-
-
+	jr $
 lx
 	ld a,#1c ;inc e
 	ld (change_a_coord),a
@@ -109,8 +66,11 @@ lx
 	ld a,(deltax)
 	ld c,a
 	inc a
-	ld xl,a
+	ld b,a
 //function line(x0, x1, y0, y1)
+//	int error := 0
+	xor a
+	ld (error+1),a
 //	int deltaerr := deltay
 	ld a,(deltay)
 	ld (deltaerr+1),a
@@ -136,8 +96,6 @@ setdiry
 cikla:
 //	for x from x0 to x1
 //		plot(x,y)
-//	int error := 0
-	ld b,0
 	ex de,hl
 loopa:
 	push de
@@ -146,10 +104,11 @@ loopa:
 change_a_coord
 	nop
 //		error := error + deltaerr
-	ld a,b
+error:
+	ld a,0
 deltaerr:
 	add 0
-	ld b,a
+	ld (error+1),a
 //		if 2 * error >= deltax
 	add a,a
 	cp c
@@ -158,12 +117,11 @@ deltaerr:
 //			error := error - deltax
 change_b_coord:
 	nop
-	ld a,b
+	ld a,(error+1)
 	sub c
-	ld b,a
+	ld (error+1),a
 preloop:
-	dec xl
-	jr nz,loopa
+	djnz loopa
 	ret
 plot:
 	ld l,d
@@ -177,7 +135,6 @@ plot:
 	add hl,de
 	ld de,#5800
 	add hl,de
-kkolor
 	ld (hl),#ff
 	ret
 setDelta:
