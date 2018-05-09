@@ -24,19 +24,15 @@ TheLoopa
 	ld a,#ff
 	ld (kkolor+1),a
 	ld hl,#0000
-	ld de,#0117
+	ld de,#011f
 	call drawline
-	ld hl,#0000
-	ld de,#171f
+	ld hl,#171f
+	ld de,#0000
 	call drawline
-	ld hl,#0000
-	ld de,#171e
-	call drawline
-
 
 	ld a,#55
 	ld (kkolor+1),a
-	ld hl,#000
+	ld hl,#0000
 	ld de,#1701
 	call drawline
 	jr TheLoopa
@@ -131,8 +127,6 @@ lx
 	ld a,#15 ;dec d
 setdiry
 	ld (change_b_coord),a
-	jr cikla
-
 cikla:
 //	for x from x0 to x1
 //		plot(x,y)
@@ -153,7 +147,7 @@ deltaerr:
 //		if 2 * error >= deltax
 	add a,a
 	cp c
-	jp c,preloop
+	jp c,preloop ;!!!
 //			y := y + diry
 //			error := error - deltax
 change_b_coord:
@@ -190,4 +184,5 @@ deltax
 	db 0
 deltay
 	db 0
+	labelslist "metki.l"
 	savesna "kubeg.sna",SnaStart
