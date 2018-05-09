@@ -24,21 +24,21 @@ TheLoopa
 	ld a,#ff
 	ld (kkolor+1),a
 	ld hl,#0000
+	ld de,#0117
+	call drawline
+	ld hl,#0000
 	ld de,#171f
 	call drawline
-	ld hl,#001f
-	ld de,#1700
+	ld hl,#0000
+	ld de,#171e
 	call drawline
+
+
 	ld a,#55
 	ld (kkolor+1),a
-	ld hl,#0001
-	ld de,#1707
-	call drawline
-	ld hl,#0007
+	ld hl,#000
 	ld de,#1701
 	call drawline
-
-
 	jr TheLoopa
 
 drawline:
