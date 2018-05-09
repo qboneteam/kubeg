@@ -145,7 +145,12 @@ deltaerr:
 	add 0
 	ld b,a
 //		if 2 * error >= deltax
-	add a,a
+	bit 7,a
+	jr nz,preloop
+	sla a
+	jr nc,.l0
+	or %10000000
+.l0
 	cp c
 	jp c,preloop ;!!!
 //			y := y + diry
